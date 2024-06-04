@@ -1,1 +1,10 @@
 Here repo contain Cluster-Autoscaler manifest
+
+In Deplotment file do the changes : 
+    1. changes cluster name 
+    2. node affinity
+    3. No_PROXY 
+    4. image
+IN serviceaccoint add role arn for clusterautoscler 
+
+
