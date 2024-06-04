@@ -1,4 +1,0 @@
-Pre-Requirements
-    We need to check about metrics-server is deployed and working.
-    we can check with using this command - kubectl top pods / kubectl top nodes 
-if metrics server is not availabe then we need to install it because HPA will work on metrics-server
