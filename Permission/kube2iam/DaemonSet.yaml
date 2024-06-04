@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: kube2iam
+  name: kube2iam
+  namespace: kube-system
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: kube2iam
+  template:
+    metadata:
+      labels:
+        name: kube2iam
+    spec:
+      containers:
+      - args:
+        - --app-port=8181
+        - --auto-discover-base-arn
+        - --auto-discover-default-role
+        - --iptables=true
+        - --host-ip=$(HOST_IP)
+        - --host-interface=eni+
+        - --use-regional-sts-endpoint
+        - --verbose
+        env:
+        - name: AWS_REGION
+          value: ap-south-1
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        image: <docker.io/jtblin/kube2iam:latest>
+        imagePullPolicy: Always
+        name: kube2iam
+        ports:
+        - containerPort: 8181
+          hostPort: 8181
+          name: http
+          protocol: TCP
+        resources: {}
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: kube2iam
+      serviceAccountName: kube2iam
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        operator: Exists
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate

@@ -2,3 +2,13 @@ Pre-Requirements
     We need to check about metrics-server is deployed and working.
     we can check with using this command - kubectl top pods / kubectl top nodes 
 if metrics server is not availabe then we need to install it because HPA will work on metrics-server
+
+
+
+
+Horizontal Pod Autoscaler  - HPA 
+	• Increasing and decreasing the number of pods or replica
+	• HPA automatically scales the number of pods in deployement , sts …etc based on that resources CPU , memori so on 
+	• When we set a target CPU utilization % , the HPA scales our application in or out to try to meet that target 
+	• HPA needs  k8s metrics server to verify CPU metrics of a pod 
+HPA is available in k8s api resources , we don't need to install it  

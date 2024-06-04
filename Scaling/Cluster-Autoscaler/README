@@ -1,25 +1,34 @@
 Here repo contain Cluster-Autoscaler manifest
 
-We need these files to dpeloy clusterautosacler 
-   1. Serviceaccount 
-   2. Role
-   3. Clusterrole
-   4. Rolebinding
-   5. Clusterrolevbinding 
-   6. Deployment 
+   Cluster-autoscaler- 
+   • Create an IAM OIDC provider.
+   • Create an IAM policy for Cluster Autoscaler.
+   • Create an IAM role for Cluster Autoscaler.
+   • Deploy Kubernetes Cluster Autoscaler.
+   • Important tag -
+       k8s.io/cluster-autoscaler/enabled=true
+       k8s.io/cluster-autoscaler/<cluster-name>: "owned"
+   • Deploy cluster autoscaler 
+       ○ Serviceaccount  (OIDC)
+       ○ Clusterrole 
+       ○ Role
+       ○ Clusterrolebinding
+       ○ Rolebinding
+       ○ Deployment (need changes the data according to cluster info)
+Test and verify 
 
 
-                        In Deplotment file do the changes : 
-                            1. changes cluster name 
-                            2. node affinity
-                            3. No_PROXY 
-                            4. image
-                        IN serviceaccoint add role arn for clusterautoscler 
+
+
+In Deplotment file do the changes : 
+    1. changes cluster name 
+    2. node affinity
+    3. No_PROXY 
+    4. image
+IN serviceaccoint add role arn for clusterautoscler 
 
 
 Role - AmazonEKSClusterAutoscalerRole 
-
-
 policy - AWSClusterAutoscalerIAMPolicy
 {
     "Statement": [
