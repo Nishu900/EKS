@@ -1,10 +1,62 @@
 Here repo contain Cluster-Autoscaler manifest
 
-In Deplotment file do the changes : 
-    1. changes cluster name 
-    2. node affinity
-    3. No_PROXY 
-    4. image
-IN serviceaccoint add role arn for clusterautoscler 
+We need these files to dpeloy clusterautosacler 
+   1. Serviceaccount 
+   2. Role
+   3. Clusterrole
+   4. Rolebinding
+   5. Clusterrolevbinding 
+   6. Deployment 
 
 
+                        In Deplotment file do the changes : 
+                            1. changes cluster name 
+                            2. node affinity
+                            3. No_PROXY 
+                            4. image
+                        IN serviceaccoint add role arn for clusterautoscler 
+
+
+Role - AmazonEKSClusterAutoscalerRole 
+
+
+policy - AWSClusterAutoscalerIAMPolicy
+{
+    "Statement": [
+        {
+            "Action": [
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeLaunchConfigurations",
+                "autoscaling:DescribeTags",
+                "autoscaling:SetDesiredCapacity",
+                "autoscaling:TerminateInstanceInAutoScalingGroup",
+                "ec2:DescribeLaunchTemplateVersions"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        }
+    ],
+    "Version": "2012-10-17"
+}
+
+
+Trust-Relationship -
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "<OIDC-ARN>"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "oidc.eks.ap-south-1.amazonaws.com/id/<OIDCMUNBER>:aud": "sts.amazonaws.com",
+                    "oidc.eks.ap-south-1.amazonaws.com/id/<OIDCMUNBER>:sub": "system:serviceaccount:kube-system:cluster-autoscaler"
+                }
+            }
+        }
+    ]
+}
