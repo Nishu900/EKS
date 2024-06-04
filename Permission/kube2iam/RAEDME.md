@@ -4,6 +4,7 @@
     3. Serviceaccount
     4. DaemonSet
     5. Role in deployment file to give permission
+By using the --debug flag you can enable some extra features making debugging easier:
 
 
 
