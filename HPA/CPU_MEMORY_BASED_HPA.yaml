@@ -1,0 +1,121 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: <HPA-NAME>
+  namespace: <namespace> 
+spec:
+  maxReplicas: 10
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 70
+        type: Utilization
+    type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: <deployment-name>
+
+
+
+  ---
+  - apiVersion: autoscaling/v2
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: <hpa-name>
+    namespace: <namespace>
+  spec:
+    maxReplicas: 10
+    metrics:
+    - resource:
+        name: memory
+        target:
+          averageUtilization: 60
+          type: Utilization
+      type: Resource
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 60
+          type: Utilization
+      type: Resource
+    minReplicas: 2
+    scaleTargetRef:
+      apiVersion: apps/v1
+      kind: Deployment
+      name: <deployment-name>
+
+
+
+---
+
+
+# scale up and scale down policy in hpa spec 
+    behavior:
+      scaleDown:
+        policies:
+        - periodSeconds: 120
+          type: Percent
+          value: 5
+        selectPolicy: Max
+      scaleUp:
+        policies:
+        - periodSeconds: 15
+          type: Pods
+          value: 4
+        - periodSeconds: 15
+          type: Percent
+          value: 100
+        selectPolicy: Max
+        stabilizationWindowSeconds: 0
+    maxReplicas: 1
+
+
+
+
+---
+# we can add custom metrics also 
+
+- apiVersion: autoscaling/v2
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: <hpa-name>
+    namespace: <namespace>
+  spec:
+    behavior:
+      scaleDown:
+        policies:
+        - periodSeconds: 120
+          type: Percent
+          value: 5
+        selectPolicy: Max
+      scaleUp:
+        policies:
+        - periodSeconds: 15
+          type: Pods
+          value: 4
+        - periodSeconds: 15
+          type: Percent
+          value: 100
+        selectPolicy: Max
+        stabilizationWindowSeconds: 0
+    maxReplicas: 1
+    metrics:
+    - object:
+        describedObject:
+          kind: Service
+          name: <deployment-name>
+        metric:
+          name: custom_cpu
+        target:
+          type: Value
+          value: "85"
+      type: Object
+    minReplicas: 1
+    scaleTargetRef:
+      apiVersion: apps/v1
+      kind: Deployment
+      name: <deploymentn-name>
+
