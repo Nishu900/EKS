@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: cluster-autoscaler
+  name: cluster-autoscaler
+  namespace: kube-system
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: cluster-autoscaler
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        prometheus.io/port: "8085"
+        prometheus.io/scrape: "true"
+      creationTimestamp: null
+      labels:
+        app: cluster-autoscaler
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - system-nodes
+      containers:
+      - command:
+        - ./cluster-autoscaler
+        - --v=4
+        - --stderrthreshold=info
+        - --cloud-provider=aws
+        - --skip-nodes-with-local-storage=false
+        - --expander=random
+        - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/<cluster-name>
+        - --balance-similar-node-groups
+        - --skip-nodes-with-system-pods=true
+        - --max-node-provision-time=3m
+        - --regional=true
+        env:
+        - name: AWS_STS_REGIONAL_ENDPOINTS
+          value: regional
+        - name: AWS_REGION
+          value: ap-south-1
+        - name: NO_PROXY
+          value: 10.100.0.0/16,s3.ap-south-1.amazonaws.com,172.31.0.0/16,sts.ap-south-1.amazonaws.com,ap-south-1.amazonaws.com,ec2.ap-south-1.amazonaws.com
+        image: <ECR-path>/cluster-autoscaler:v1.25.1
+        imagePullPolicy: Always
+        name: cluster-autoscaler
+        resources:
+          limits:
+            cpu: 100m
+            memory: 600Mi
+          requests:
+            cpu: 100m
+            memory: 600Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/ssl/certs/ca-certificates.crt
+          name: ssl-certs
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        node-type: system-nodes
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: cluster-autoscaler
+      serviceAccountName: cluster-autoscaler
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /etc/ssl/certs/ca-bundle.crt
+          type: ""
+        name: ssl-certs
