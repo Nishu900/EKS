@@ -1,0 +1,31 @@
+The AWS Load Balancer Controller manages AWS Elastic Load Balancers for a Kubernetes cluster. You can use the controller to expose your cluster apps to the internet. The controller provisions AWS load balancers that point to cluster Service or Ingress resources
+
+
+-What is ALB-controller 
+https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
+
+
+-How to install it.
+https://docs.aws.amazon.com/eks/latest/userguide/lbc-manifest.html
+
+
+
+We need to install cert-manager first (same doc )
+https://docs.aws.amazon.com/eks/latest/userguide/lbc-manifest.html
+
+
+
+Needed - 
+    - IAM role with OIDC
+    - Cert-manager 
+    - Serviceaccount 
+    - permission role and cluster role
+    - CustomResourceDefinition
+    - ValidatingWebhookConfiguration
+    - MutatingWebhookConfiguration
+    - certificate 
+    - Issuer
+    - Deployment 
+    - service 
+    - IngressClassParams
+    - IngressClass
