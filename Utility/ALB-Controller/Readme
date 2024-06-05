@@ -29,3 +29,9 @@ Needed -
     - service 
     - IngressClassParams
     - IngressClass
+
+
+Important link - https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/guide/ingress/ingress_class/
+
+
+
